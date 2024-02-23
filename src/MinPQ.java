@@ -1,5 +1,3 @@
-
-import java.util.Comparator;
 import java.util.NoSuchElementException;
 
 public class MinPQ<Key> {
@@ -18,9 +16,7 @@ public class MinPQ<Key> {
     public MinPQ(Key[] keys) {
         N = keys.length;
         pq = (Key[]) new Object[keys.length + 1];
-        for (int i = 0; i < N; i++) {
-            pq[i+1] = keys[i];
-        }
+        System.arraycopy(keys, 0, pq, 1, N);
         // heap construction
         for (int k = N /2; k >= 1; k--) {
             sink(k);
@@ -44,9 +40,7 @@ public class MinPQ<Key> {
     private void resize(int capacity) {
         assert capacity > N;
         Key[] temp = (Key[]) new Object[capacity];
-        for (int i = 1; i <= N; i++) {
-            temp[i] = pq[i];
-        }
+        if (N >= 0) System.arraycopy(pq, 1, temp, 1, N);
         pq = temp;
     }
 

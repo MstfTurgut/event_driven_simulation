@@ -6,7 +6,7 @@ public class CollisionSystem {
 
     private MinPQ<Event> pq;
     private double t = 0.0;
-    private Particle[] particles;
+    private final Particle[] particles;
 
     public CollisionSystem(Particle[] particles) {
         this.particles = particles.clone(); // copy
@@ -18,10 +18,10 @@ public class CollisionSystem {
         if(a == null) return;
 
         // update pq for this particle
-        for(int i = 0 ; i < particles.length; i++) {
-            double dt = a.timeToHit(particles[i]);
-            if(dt < limit)
-                pq.insert(new Event(t + dt , a , particles[i]));
+        for (Particle particle : particles) {
+            double dt = a.timeToHit(particle);
+            if (dt < limit)
+                pq.insert(new Event(t + dt, a, particle));
         }
 
         // make pq empty
@@ -38,8 +38,8 @@ public class CollisionSystem {
 
     private void redraw(double limit) {
         StdDraw.clear();
-        for (int i = 0; i < particles.length; i++) {
-            particles[i].draw();
+        for (Particle particle : particles) {
+            particle.draw();
         }
         StdDraw.show();
         StdDraw.pause(20);
@@ -55,8 +55,8 @@ public class CollisionSystem {
         // initial predictions & initial draw
 
         pq = new MinPQ<>();
-        for(int i = 0; i < particles.length; i++) {
-            predict(particles[i] , limit);
+        for (Particle particle : particles) {
+            predict(particle, limit);
         }
         pq.insert(new Event(0 , null , null));
 
@@ -69,8 +69,8 @@ public class CollisionSystem {
             Particle a = e.a;
             Particle b = e.b;
 
-            for(int i = 0; i < particles.length; i++) {
-                particles[i].move(e.time - t);
+            for (Particle particle : particles) {
+                particle.move(e.time - t);
             }
             t = e.time;
 
@@ -79,7 +79,7 @@ public class CollisionSystem {
                 redraw(limit);
             } else if(e.a != null && e.b == null) {
                 e.a.bounceOffVerticalWall();
-            } else if(e.a == null && e.b != null ) {
+            } else if(e.a == null) {
                 e.b.bounceOffHorizontalWall();
             } else {
                 e.a.bounceOff(e.b);
@@ -89,8 +89,6 @@ public class CollisionSystem {
             predict(a , limit);
             predict(b , limit);
         }
-
-
 
     }
 
@@ -105,7 +103,7 @@ public class CollisionSystem {
         Particle[] particles;
 
         // n random particles
-        int n = 40;
+        int n = 20;
         particles = new Particle[n];
         for (int i = 0; i < n; i++)
             particles[i] = new Particle();
